@@ -1,0 +1,268 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 8,
+                "minute": 0
+              }
+            ]
+          }
+        },
+        "name": "Daily Trigger",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [200, 300]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 1: Soltero a Propósito"
+              },
+              {
+                "name": "description",
+                "value": "Write 3 benefits of being single, set 1-3 life goals, and reflect for 30 minutes on independence."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-01T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-01T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 1 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 200]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 2: Cómo Estar Solo"
+              },
+              {
+                "name": "description",
+                "value": "Schedule 1-2 hours of alone time. Turn off your phone and meditate or journal on being alone."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-02T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-02T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 2 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 300]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 3: Suficientemente Hombre"
+              },
+              {
+                "name": "description",
+                "value": "Write 5 traits you admire in others, reflect on when you demonstrated them, and start a small daily act of kindness."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-03T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-03T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 3 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 400]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 4: El Hombre en Busca de Sentido"
+              },
+              {
+                "name": "description",
+                "value": "Journal your 'why' in life, write 3 ways to live with purpose, and read a chapter of Viktor Frankl’s book."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-04T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-04T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 4 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 500]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 5: Hábitos Atómicos"
+              },
+              {
+                "name": "description",
+                "value": "Identify a habit to create and one to break. Write the trigger, routine, and reward for both."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-05T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-05T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 5 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 600]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "title",
+                "value": "Day 6: Ordena tu Mente"
+              },
+              {
+                "name": "description",
+                "value": "Write all tasks cluttering your mind. Organize them by priority and tackle the most urgent."
+              },
+              {
+                "name": "startDate",
+                "value": "2025-01-06T08:00:00"
+              },
+              {
+                "name": "endDate",
+                "value": "2025-01-06T09:00:00"
+              }
+            ]
+          }
+        },
+        "name": "Day 6 Task",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [400, 700]
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "calendar": "primary",
+          "start": "={{$json[\"startDate\"]}}",
+          "end": "={{$json[\"endDate\"]}}",
+          "summary": "={{$json[\"title\"]}}",
+          "description": "={{$json[\"description\"]}}",
+          "attendees": [
+            {
+              "email": "saguilera1608@gmail.com"
+            }
+          ]
+        },
+        "name": "Create Calendar Event",
+        "type": "n8n-nodes-base.googleCalendar",
+        "typeVersion": 1,
+        "position": [800, 300],
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "1",
+            "name": "Google Calendar Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "fromEmail": "your-email@gmail.com",
+          "toEmail": "saguilera1608@gmail.com",
+          "subject": "Daily Task: {{$json[\"title\"]}}",
+          "text": "Hello,\n\nToday's task: {{$json[\"title\"]}}.\nDetails: {{$json[\"description\"]}}.\nComplete it within the scheduled time: {{$json[\"startDate\"]}} to {{$json[\"endDate\"]}}.\n\nBest regards,\nYour Automation Bot"
+        },
+        "name": "Send Email Invitation",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 1,
+        "position": [1000, 300],
+        "credentials": {
+          "gmailOAuth2Api": {
+            "id": "1",
+            "name": "Gmail Account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Daily Trigger": {
+        "main": [
+          [
+            {
+              "node": "Day 1 Task",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Day 1 Task": {
+        "main": [
+          [
+            {
+              "node": "Create Calendar Event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Calendar Event": {
+        "main": [
+          [
+            {
+              "node": "Send Email Invitation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
+  
