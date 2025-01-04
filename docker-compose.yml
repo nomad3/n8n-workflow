@@ -1,24 +1,12 @@
 version: '3.8'
 
 services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-    depends_on:
-      - n8n
-    restart: unless-stopped
-
   n8n:
     build: 
       context: .
       dockerfile: Dockerfile
-    expose:
-      - "5678"
+    ports:
+      - "5678:5678"
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
@@ -32,9 +20,8 @@ services:
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
-      - N8N_EDITOR_BASE_URL=https://34.134.38.96
-      - WEBHOOK_URL=https://34.134.38.96/
-      - N8N_METRICS=false
+      - N8N_EDITOR_BASE_URL=http://34.134.38.96:5678
+      - WEBHOOK_URL=http://34.134.38.96:5678/
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
@@ -50,7 +37,6 @@ services:
       - POSTGRES_USER=n8n
       - POSTGRES_PASSWORD=n8n_password
       - POSTGRES_DB=n8n
-      - POSTGRES_NON_ROOT_USER=n8n
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -75,8 +61,3 @@ volumes:
   n8n_data:
   postgres_data:
   redis_data:
-
-networks:
-  default:
-    name: n8n_network
-    driver: bridge
