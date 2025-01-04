@@ -17,7 +17,7 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
       - N8N_BASIC_AUTH_PASSWORD=YOUR_SECURE_PASSWORD
-      - N8N_HOST=34.134.38.96
+      - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_EDITOR_BASE_URL=http://34.134.38.96:5678
@@ -25,6 +25,8 @@ services:
       - EXECUTIONS_DATA_PRUNE=true
       - EXECUTIONS_DATA_MAX_AGE=168
       - N8N_REDIS_HOST=redis
+      - NODE_ENV=production
+      - N8N_LOG_LEVEL=debug
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
