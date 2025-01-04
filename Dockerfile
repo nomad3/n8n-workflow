@@ -5,14 +5,13 @@ ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 USER root
 RUN mkdir -p /home/node/.n8n && \
     chown -R node:node /home/node/.n8n && \
-    chmod 700 /home/node/.n8n && \
-    apt-get update && \
-    apt-get install -y nodejs npm
+    chmod 700 /home/node/.n8n
 
 USER node
 EXPOSE 5678
 
 VOLUME /home/node/.n8n
 
-# Iniciar n8n usando node directamente
-CMD ["node", "/usr/local/lib/node_modules/n8n/bin/n8n", "start"]
+# Usar n8n directamente desde la imagen
+ENTRYPOINT ["n8n"]
+CMD ["start"]
