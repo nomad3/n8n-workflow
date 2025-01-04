@@ -9,7 +9,6 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
     depends_on:
       - n8n
     restart: unless-stopped
@@ -32,13 +31,10 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=YOUR_SECURE_PASSWORD
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
-      - N8N_PROTOCOL=https
+      - N8N_PROTOCOL=http
       - N8N_EDITOR_BASE_URL=https://34.134.38.96
       - WEBHOOK_URL=https://34.134.38.96/
-      - EXECUTIONS_DATA_PRUNE=true
-      - EXECUTIONS_DATA_MAX_AGE=168
-      - N8N_REDIS_HOST=redis
-      - NODE_ENV=production
+      - N8N_METRICS=false
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
