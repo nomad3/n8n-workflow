@@ -11,3 +11,5 @@ USER node
 EXPOSE 5678
 
 VOLUME /home/node/.n8n
+
+CMD ["n8n", "start"]
