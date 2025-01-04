@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: n8n
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        fromService:
+          name: n8n-postgres
+          type: pserv
+          property: host
+      - key: DB_POSTGRESDB_DATABASE
+        fromService:
+          name: n8n-postgres
+          type: pserv
+          property: database
+      - key: DB_POSTGRESDB_USER
+        fromService:
+          name: n8n-postgres
+          type: pserv
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromService:
+          name: n8n-postgres
+          type: pserv
+          property: password
+      - key: N8N_HOST
+        value: "your-app-name.onrender.com"
+      - key: N8N_PROTOCOL
+        value: "https"
+      - key: N8N_PORT
+        value: "5678"
+      - key: NODE_ENV
+        value: "production"
+      - key: N8N_ENCRYPTION_KEY
+        fromSecret: true
+    disk:
+      name: n8n-data
+      mountPath: /root/.n8n
+      sizeGB: 1 
+
+  - type: pserv
+    name: n8n-postgres
+    env: postgresql
+    plan: free 
