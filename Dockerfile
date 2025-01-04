@@ -1,13 +1,25 @@
-FROM n8nio/n8n
+FROM node:18-alpine
 
+# Install required packages
+RUN apk add --update graphicsmagick tzdata
+
+# Create n8n directory
 USER root
 RUN mkdir -p /home/node/.n8n && \
     chown -R node:node /home/node/.n8n && \
-    chmod -R 700 /home/node/.n8n
+    chmod -R 755 /home/node/.n8n
 
+# Switch to node user
 USER node
-EXPOSE 5678
-VOLUME /home/node/.n8n
+WORKDIR /home/node
 
-# Importante: no agregamos ENTRYPOINT; la imagen de n8n ya lo define
+# Install n8n
+RUN npm install n8n -g
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV N8N_EDITOR_BASE_URL=http://localhost:5678
+
+EXPOSE 5678
+
 CMD ["n8n", "start"]
