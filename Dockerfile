@@ -1,13 +1,13 @@
 FROM n8nio/n8n:latest
 
-ENV DB_TYPE=postgresdb
-ENV DB_POSTGRESDB_HOST=tu-host
-ENV DB_POSTGRESDB_DATABASE=n8n
-ENV DB_POSTGRESDB_USER=usuario
-ENV DB_POSTGRESDB_PASSWORD=contraseña
+ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 
-# Puerto por defecto de n8n
+USER root
+RUN mkdir -p /home/node/.n8n && \
+    chown -R node:node /home/node/.n8n && \
+    chmod 700 /home/node/.n8n
+
+USER node
 EXPOSE 5678
 
-# Volumen para persistir los datos
-VOLUME /root/.n8n 
+VOLUME /home/node/.n8n

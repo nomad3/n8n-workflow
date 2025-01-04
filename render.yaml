@@ -27,7 +27,7 @@ services:
           type: pserv
           property: password
       - key: N8N_HOST
-        value: "your-app-name.onrender.com"
+        value: "n8n-workflow-73vh.onrender.com"
       - key: N8N_PROTOCOL
         value: "https"
       - key: N8N_PORT
