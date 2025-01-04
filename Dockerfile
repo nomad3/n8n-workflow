@@ -9,5 +9,5 @@ USER node
 EXPOSE 5678
 VOLUME /home/node/.n8n
 
-# Esta es la forma oficial de iniciar n8n en su imagen Docker
-CMD ["tini", "--", "n8n", "start"]
+# Importante: no agregamos ENTRYPOINT; la imagen de n8n ya lo define
+CMD ["n8n", "start"]
