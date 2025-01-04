@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   n8n:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "5678:5678"
     environment:
@@ -39,8 +41,6 @@ services:
       - POSTGRES_USER=n8n
       - POSTGRES_PASSWORD=n8n_password
       - POSTGRES_DB=n8n
-      - POSTGRES_NON_ROOT_USER=n8n
-      - POSTGRES_NON_ROOT_PASSWORD=n8n_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
