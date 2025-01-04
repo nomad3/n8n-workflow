@@ -12,5 +12,5 @@ EXPOSE 5678
 
 VOLUME /home/node/.n8n
 
-# Usar directamente el binario de n8n que viene con la imagen
-CMD ["/usr/local/bin/node", "/usr/local/lib/node_modules/n8n/bin/n8n", "start"]
+# Usar el comando npm directamente para iniciar n8n
+CMD ["npm", "run", "start"]
