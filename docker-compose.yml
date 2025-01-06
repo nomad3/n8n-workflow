@@ -18,7 +18,7 @@ services:
       - N8N_BASIC_AUTH_USER=admin@admin.com
       - N8N_BASIC_AUTH_PASSWORD=adminpassword
       - N8N_HOST=n8n.aremko.cl
-      - N8N_PORT=443
+      - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - N8N_EDITOR_BASE_URL=https://n8n.aremko.cl
       - WEBHOOK_URL=https://n8n.aremko.cl/
