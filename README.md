@@ -232,7 +232,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
+    volumes:c:\Users\sagui\Documents\simon\agents\agents-mvp\n8n_workflow.json
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-certificates:/certificates"
 ```

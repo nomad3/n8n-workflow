@@ -1,0 +1,177 @@
+{
+    "name": "Aremko Agent Integration Flow",
+    "active": true,
+    "connections": {
+        "HTTP Trigger": {
+            "main": [[{"node": "Process Message", "type": "main", "index": 0}]]
+        },
+        "Process Message": {
+            "main": [[{"node": "Agent Chat", "type": "main", "index": 0}]]
+        },
+        "Agent Chat": {
+            "main": [
+                [{"node": "Has Booking", "type": "main", "index": 0}]
+            ]
+        },
+        "Has Booking": {
+            "main": [
+                [{"node": "Create Calendar Events", "type": "main", "index": 0}],
+                [{"node": "Skip Calendar", "type": "main", "index": 0}]
+            ]
+        },
+        "Create Calendar Events": {
+            "main": [[{"node": "Success Response", "type": "main", "index": 0}]],
+            "error": [[{"node": "Error Handler", "type": "main", "index": 0}]]
+        }
+    },
+    "nodes": [
+        {
+            "parameters": {
+                "path": "agent-webhook",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "name": "HTTP Trigger",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [250, 300]
+        },
+        {
+            "parameters": {
+                "jsCode": "const data = $input.body;\n\nreturn {\n    json: {\n        conversation_id: data.conversation_id || null,\n        state: data.state || \"initial\",\n        text: data.message,\n        customer_id: data.customer_id || null\n    }\n};"
+            },
+            "name": "Process Message",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 1,
+            "position": [450, 300]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/chat",
+                "method": "POST",
+                "authentication": "headerAuth",
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-API-Key",
+                            "value": "={{$env.AGENT_API_KEY}}"
+                        }
+                    ]
+                },
+                "queryParameters": {
+                    "state": "={{$json.state}}",
+                    "text": "={{$json.text}}",
+                    "conversation_id": "={{$json.conversation_id}}",
+                    "customer_id": "={{$json.customer_id}}"
+                }
+            },
+            "name": "Agent Chat",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 2,
+            "position": [650, 300]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{$json.next_state}}",
+                            "value2": "closing"
+                        }
+                    ]
+                }
+            },
+            "name": "Has Booking",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [850, 300]
+        },
+        {
+            "parameters": {
+                "resource": "event",
+                "operation": "create",
+                "calendar": {
+                    "value": "={{$env.AREMKO_CALENDAR_ID}}"
+                },
+                "title": "Reserva Aremko - {{$json.nombre_cliente}}",
+                "start": {
+                    "value": "={{$json.fecha_reserva}}"
+                },
+                "description": "Estado: {{$json.estado}}\nCliente: {{$json.nombre_cliente}}\nTeléfono: {{$json.telefono}}\nServicios: {{$json.servicios.join(', ')}}\n\nReserva generada por Agente Virtual\nConversation ID: {{$json.conversation_id}}",
+                "credentials": {
+                    "googleCalendarOAuth2Api": {
+                        "id": "1",
+                        "name": "Google Calendar account"
+                    }
+                }
+            },
+            "name": "Create Calendar Events",
+            "type": "n8n-nodes-base.googleCalendar",
+            "typeVersion": 3,
+            "position": [1050, 300]
+        },
+        {
+            "parameters": {
+                "keepOnlySet": true,
+                "values": {
+                    "string": [
+                        {
+                            "name": "status",
+                            "value": "success"
+                        },
+                        {
+                            "name": "message",
+                            "value": "Calendar event created successfully"
+                        }
+                    ]
+                }
+            },
+            "name": "Success Response",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [1250, 300]
+        },
+        {
+            "parameters": {
+                "keepOnlySet": true,
+                "values": {
+                    "string": [
+                        {
+                            "name": "status",
+                            "value": "error"
+                        },
+                        {
+                            "name": "message",
+                            "value": "Failed to create calendar event"
+                        }
+                    ]
+                }
+            },
+            "name": "Error Handler",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [1250, 450]
+        },
+        {
+            "parameters": {
+                "keepOnlySet": true,
+                "values": {
+                    "string": [
+                        {
+                            "name": "status",
+                            "value": "skipped"
+                        },
+                        {
+                            "name": "message",
+                            "value": "No calendar event needed"
+                        }
+                    ]
+                }
+            },
+            "name": "Skip Calendar",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [1050, 450]
+        }
+    ]
+}
