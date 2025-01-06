@@ -24,7 +24,9 @@ services:
       - WEBHOOK_URL=https://n8n.aremko.cl/
       - N8N_SECURE_COOKIE=true
       - N8N_LISTEN_ADDRESS=0.0.0.0
-      - N8N_METRICS_PREFIX=n8n
+      - NODE_ENV=production
+      - AREMKO_CALENDAR_ID=b14c9a9d5234686a4d57b671405a2b3f90636a2fb81c4b08b3481122bb9b5164@group.calendar.google.com
+
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
@@ -81,6 +83,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-certificates:/certificates"
     command:
+      - "--log.level=DEBUG"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -90,6 +93,8 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=saguilera1608@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/certificates/acme.json"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
     networks:
       - n8n-network
 
