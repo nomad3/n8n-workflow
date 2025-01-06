@@ -6,8 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "443:443"
-      - "80:80"
+      - "5678:5678"
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
@@ -37,6 +36,7 @@ services:
       - "traefik.http.routers.n8n.rule=Host(`n8n.aremko.cl`)"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls.certresolver=myresolver"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
   postgres:
     image: postgres:13-alpine
@@ -80,7 +80,7 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
+      - "--certificatesresolvers.myresolver.acme.email=saguilera1608@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/certificates/acme.json"
 
 volumes:
