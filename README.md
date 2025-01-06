@@ -201,3 +201,177 @@ Para un entorno de producción, se recomienda:
 - [Documentación oficial de n8n](https://docs.n8n.io/)
 - [Docker Hub - n8n](https://hub.docker.com/r/n8nio/n8n)
 - [GitHub - n8n](https://github.com/n8n-io/n8n)
+
+## SSL Configuration with Traefik
+
+The setup uses Traefik as a reverse proxy to handle SSL certificates automatically through Let's Encrypt.
+
+### Key Components
+- Traefik handles SSL termination
+- Automatic certificate generation and renewal
+- HTTP to HTTPS redirection
+- Custom domain support (n8n.aremko.cl)
+
+### SSL Configuration
+```yaml
+# Key parts of docker-compose.yml
+services:
+  n8n:
+    environment:
+      - N8N_PROTOCOL=https
+      - N8N_HOST=n8n.aremko.cl
+      - N8N_SECURE_COOKIE=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.aremko.cl`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=myresolver"
+
+  traefik:
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-certificates:/certificates"
+```
+
+## Maintenance Guide
+
+### Regular Updates
+```bash
+# Update all containers
+docker-compose pull
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# View specific service logs
+docker-compose logs -f n8n
+docker-compose logs -f traefik
+```
+
+### Backup Procedures
+
+1. **SSL Certificates**
+   ```bash
+   # Backup certificates
+   docker cp n8n-workflow_traefik_1:/certificates/acme.json ./backup/
+   ```
+
+2. **Database Backup**
+   ```bash
+   # Backup PostgreSQL database
+   docker-compose exec postgres pg_dump -U n8n n8n > backup/n8n_db_$(date +%Y%m%d).sql
+   ```
+
+3. **n8n Data**
+   ```bash
+   # Backup n8n data
+   docker cp n8n-workflow_n8n_1:/home/node/.n8n ./backup/n8n_data
+   ```
+
+### Security Maintenance
+
+1. **Regular Tasks**
+   - Update Docker images monthly
+   - Check logs for unusual activity
+   - Monitor certificate expiration
+   - Review and update passwords
+
+2. **SSL Certificate Monitoring**
+   ```bash
+   # Check certificate status
+   docker-compose exec traefik cat /certificates/acme.json
+   ```
+
+3. **Access Control**
+   - Regularly update n8n admin password
+   - Review and update firewall rules
+   - Monitor access logs
+
+### Troubleshooting
+
+1. **SSL Issues**
+   ```bash
+   # Check Traefik logs
+   docker-compose logs traefik
+
+   # Verify certificate existence
+   docker-compose exec traefik ls -la /certificates/
+   ```
+
+2. **Connection Issues**
+   - Verify DNS settings
+   - Check firewall rules (ports 80 and 443)
+   - Verify network connectivity
+
+3. **Service Health**
+   ```bash
+   # Check service status
+   docker-compose ps
+
+   # Restart specific service
+   docker-compose restart n8n
+   ```
+
+### Recovery Procedures
+
+1. **Complete System Restore**
+   ```bash
+   # Stop services
+   docker-compose down
+
+   # Restore backups
+   # [Restore steps for your backup solution]
+
+   # Restart services
+   docker-compose up -d
+   ```
+
+2. **Individual Service Restore**
+   ```bash
+   # Restore specific service
+   docker-compose up -d service_name
+   ```
+
+## Monitoring
+
+### Key Metrics to Monitor
+- Container health status
+- Certificate expiration
+- Database size and performance
+- Memory usage
+- CPU usage
+- Disk space
+
+### Log Monitoring
+```bash
+# View real-time logs
+docker-compose logs -f
+
+# View specific timeframe
+docker-compose logs --since 30m
+```
+
+## Best Practices
+
+1. **Regular Maintenance**
+   - Schedule monthly updates
+   - Implement automated backups
+   - Monitor system resources
+   - Keep documentation updated
+
+2. **Security**
+   - Use strong passwords
+   - Keep systems updated
+   - Monitor access logs
+   - Regular security audits
+
+3. **Backup Strategy**
+   - Daily database backups
+   - Weekly full system backups
+   - Test restore procedures regularly
+   - Store backups securely
