@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5678:5678"
+      - "443:443"
+      - "80:80"
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
@@ -17,12 +18,12 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin@admin.com
       - N8N_BASIC_AUTH_PASSWORD=adminpassword
-      - N8N_HOST=0.0.0.0
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=http
-      - N8N_EDITOR_BASE_URL=http://34.134.38.96:5678
-      - WEBHOOK_URL=http://34.134.38.96:5678/
-      - N8N_SECURE_COOKIE=false
+      - N8N_HOST=n8n.aremko.cl
+      - N8N_PORT=443
+      - N8N_PROTOCOL=https
+      - N8N_EDITOR_BASE_URL=https://n8n.aremko.cl
+      - WEBHOOK_URL=https://n8n.aremko.cl/
+      - N8N_SECURE_COOKIE=true
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
@@ -31,6 +32,11 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.aremko.cl`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=myresolver"
 
   postgres:
     image: postgres:13-alpine
@@ -58,7 +64,27 @@ services:
       retries: 3
     restart: unless-stopped
 
+  traefik:
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-certificates:/certificates"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/certificates/acme.json"
+
 volumes:
   n8n_data:
   postgres_data:
   redis_data:
+  traefik-certificates:
