@@ -97,18 +97,22 @@
                 "start": {
                     "value": "={{$json.fecha_reserva}}"
                 },
+                "end": {
+                    "value": "={{$json.fecha_reserva}}"
+                },
                 "description": "Estado: {{$json.estado}}\nCliente: {{$json.nombre_cliente}}\nTeléfono: {{$json.telefono}}\nServicios: {{$json.servicios.join(', ')}}\n\nReserva generada por Agente Virtual\nConversation ID: {{$json.conversation_id}}",
-                "credentials": {
-                    "googleCalendarOAuth2Api": {
-                        "id": "1",
-                        "name": "Google Calendar account"
-                    }
-                }
+                "options": {}
             },
             "name": "Create Calendar Events",
             "type": "n8n-nodes-base.googleCalendar",
             "typeVersion": 3,
-            "position": [1050, 300]
+            "position": [1050, 300],
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "1",
+                    "name": "Google Calendar account"
+                }
+            }
         },
         {
             "parameters": {
