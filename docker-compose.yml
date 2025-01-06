@@ -23,6 +23,8 @@ services:
       - N8N_EDITOR_BASE_URL=https://n8n.aremko.cl
       - WEBHOOK_URL=https://n8n.aremko.cl/
       - N8N_SECURE_COOKIE=true
+      - N8N_LISTEN_ADDRESS=0.0.0.0
+      - N8N_METRICS_PREFIX=n8n
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
@@ -31,6 +33,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - n8n-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=Host(`n8n.aremko.cl`)"
@@ -52,6 +56,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - n8n-network
 
   redis:
     image: redis:6-alpine
@@ -63,6 +69,8 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    networks:
+      - n8n-network
 
   traefik:
     image: traefik:v2.10
@@ -82,9 +90,15 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=saguilera1608@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/certificates/acme.json"
+    networks:
+      - n8n-network
 
 volumes:
   n8n_data:
   postgres_data:
   redis_data:
   traefik-certificates:
+
+networks:
+  n8n-network:
+    driver: bridge
