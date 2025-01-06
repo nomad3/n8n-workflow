@@ -88,29 +88,21 @@
         },
         {
             "parameters": {
-                "resource": "event",
-                "operation": "create",
-                "calendar": {
-                    "value": "={{$env.AREMKO_CALENDAR_ID}}"
-                },
-                "title": "Reserva Aremko - {{$json.nombre_cliente}}",
-                "start": {
-                    "value": "={{$json.fecha_reserva}}"
-                },
-                "end": {
-                    "value": "={{$json.fecha_reserva}}"
-                },
-                "description": "Estado: {{$json.estado}}\nCliente: {{$json.nombre_cliente}}\nTeléfono: {{$json.telefono}}\nServicios: {{$json.servicios.join(', ')}}\n\nReserva generada por Agente Virtual\nConversation ID: {{$json.conversation_id}}",
-                "options": {}
+                "authentication": "oAuth2",
+                "calendar": "primary",
+                "start": "={{$json.fecha_reserva}}",
+                "end": "={{$json.fecha_reserva}}",
+                "summary": "Reserva Aremko - {{$json.nombre_cliente}}",
+                "description": "Estado: {{$json.estado}}\nCliente: {{$json.nombre_cliente}}\nTeléfono: {{$json.telefono}}\nServicios: {{$json.servicios.join(', ')}}\n\nReserva generada por Agente Virtual\nConversation ID: {{$json.conversation_id}}"
             },
             "name": "Create Calendar Events",
             "type": "n8n-nodes-base.googleCalendar",
-            "typeVersion": 3,
+            "typeVersion": 1,
             "position": [1050, 300],
             "credentials": {
                 "googleCalendarOAuth2Api": {
                     "id": "1",
-                    "name": "Google Calendar account"
+                    "name": "Google Calendar Account"
                 }
             }
         },
